@@ -1,0 +1,74 @@
+services:
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    restart: always
+    networks:
+      - cloud
+    depends_on:
+      - nextclouddb
+      - redis
+    ports:
+      - 8084:80
+    volumes:
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/html:/var/www/html
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/custom_apps:/var/www/html/custom_apps
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/config:/var/www/html/config
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/data:/var/www/html/data
+      # - /shared:/media/unraid
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=MAKE UP A LONG PASSWORD HERE!!!!!!
+      - MYSQL_HOST=nextclouddb
+      - REDIS_HOST=redis
+  nextclouddb:
+    image: mariadb:11.4
+    container_name: nextcloud-db
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    networks:
+      - cloud
+    volumes:
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/mariadb:/var/lib/mysql
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_PASSWORD=SAME PASSWORD AS YOU CREATED IN THE NEXTCLOUD CONTAINER ABOVE!!!!!
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - QUERY_CACHE_TYPE=0
+      - QUERY_CACHE_SIZE=0
+  collabora:
+    image: collabora/code
+    container_name: collabora
+    restart: always
+    networks:
+      - cloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - password=MAKE UP A NEW LONG PASSWORD!!!!!
+      - username=nextcloud
+      - domain=YOUR DOMAIN. EXAMPLE = mypersonalyoutube.org
+      - extra_params=--o:ssl.enable=true
+    ports:
+      - 9980:9980
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - /YOUR/UNRAID/APPDATA/DESTINATION/nextcloud/redis:/data
+    networks:
+      - cloud
+networks:
+  cloud:
+    name: cloud
+    driver: bridge
