@@ -4,5 +4,6 @@ My unraid docker and docker compose setups. Compose setups can be used in other 
 So far we have.....<br>
   -Authentik<br>
   -Nextcloud-stack<br>
+  -Ghost<br>
   -netbootxyz<br>
   More to come
