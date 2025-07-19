@@ -1,0 +1,50 @@
+services:
+  ghost:
+    image: 'ghost:5-alpine'
+    container_name: ghost
+    restart: always
+    ports:
+      - '2367:2368'
+    environment:
+      database__client: mysql
+      database__connection__host: ADD IP ADDRESS OF SERVER OR GHOST MYSQL DATABASE (EXAMPLE = 192.168.1.20)
+      database__connection__port: 3306
+      database__connection__user: root
+      database__connection__password: MAKE A LONG DB PASSWORD
+      database__connection__database: ghost
+      url: 'ADD URL INSIDE SINGLE QUOTES (EXAMPLE=https://www.myghostblog.com'
+      mail__transport: SMTP
+      mail__from: ADD EMAIL ADDRESS FOR GOOGLE (EXAMPLE = username@gmail.com)
+      mail__options__service: Google
+      mail__options__host: smtp.gmail.com
+      mail__options__port: 465
+      mail__options__auth__user: ADD EMAIL ADDRESS (username@gmail.com)
+      mail__options__auth__pass: ADD EMAIL PASSWORD
+    volumes:
+      - '/PATH/TO/APPDATA/ghost/content:/var/lib/ghost/content'
+    labels:
+      - wud.tag.include=^5-alpine$$
+      - wud.watch.digest=true
+    networks:
+      - ghost
+      - default
+  db:
+    image: 'mysql:8.4.3'
+    container_name: ghost-db
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: SAME LONG PASSWORD AS USED ABOVE IN GHOST CONTAINER
+    volumes:
+      - '/PATH/TO/APPDATA/ghost/mysql:/var/lib/mysql'
+    labels:
+      - wud.tag.include=^8\.\d+\.\d+$$
+      - wud.watch.digest=true
+    networks:
+      - default
+networks:
+  ghost:
+    external: true
+  default:
+    driver: bridge
