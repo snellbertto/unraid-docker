@@ -1,0 +1,23 @@
+services:
+  netbootxyz:
+    image: ghcr.io/netbootxyz/netbootxyz
+    container_name: netbootxyz
+    environment:
+      - MENU_VERSION=2.0.84 # optional
+    volumes:
+      - /YOUR/UNRAID/APPDATA/DESTINATION/netbootxyz:/config # optional
+      - /YOUR/UNRAID/APPDATA/DESTINATION/netbootxyz/assets:/assets # optional
+    ports:
+      - 3030:3000
+      - 69:69/udp
+      - 8087:80
+    restart: unless-stopped
+
+  netboot-http:
+    image: nginx:alpine
+    container_name: netboot-http
+    ports:
+      - "8088:80"
+    volumes:
+      - /YOUR/UNRAID/APPDATA/DESTINATION/netboot-http:/usr/share/nginx/html:ro
+    restart: unless-stopped
