@@ -1,0 +1,21 @@
+services:
+
+  app:
+    image: nightscout/cgm-remote-monitor
+    container_name: Nightscout
+    ports:
+      - "1337:1337"
+    networks:
+      - internal
+
+  db:
+    image: mongo:latest
+    container_name: Nightscout_mongodb
+    networks:
+      - internal
+    volumes:
+      - /PATH/TO/APPDATA/nightscout/database:/data/db
+
+networks:
+  internal:
+    driver: bridge
